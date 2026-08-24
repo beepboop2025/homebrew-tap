@@ -4,6 +4,7 @@ class FinancialEvidence < Formula
   url "https://github.com/beepboop2025/financial-evidence-skills/releases/download/v0.1.0/financial_evidence-0.1.0.tar.gz"
   sha256 "2cbf3a050279573a7da050b68e323ce5c5d4519a18065436250b993c30d4149a"
   license "MIT"
+  revision 1
   head "https://github.com/beepboop2025/financial-evidence-skills.git", branch: "main"
 
   depends_on "python@3.14"
@@ -24,6 +25,8 @@ class FinancialEvidence < Formula
       export PYTHONPATH="#{libexec/site_packages}${PYTHONPATH:+:$PYTHONPATH}"
       exec "#{python}" -m financial_evidence.mcp "$@"
     SH
+
+    generate_completions_from_executable(bin/"financial-evidence", "completion")
   end
 
   test do
