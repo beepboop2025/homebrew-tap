@@ -2,6 +2,21 @@
 
 Self-owned Homebrew formulae for public, read-only financial infrastructure.
 
+## LiquiLens Evidence Carrier
+
+Install the CLI for issuing, verifying, and projecting portable financial
+evidence carriers:
+
+```bash
+brew install beepboop2025/tap/liquilens-evidence
+liquilens-evidence issue descriptor.json > carrier.json
+liquilens-evidence verify carrier.json --as-of 2026-08-25T00:00:00Z
+```
+
+The formula is built from the immutable `v0.13.6` Python source distribution
+and verifies its SHA-256 before installation. The CLI has no third-party Python
+runtime dependencies.
+
 ## Financial Evidence
 
 Install the terminal and MCP router for LiquiLens, Undertow, Seiche, and
