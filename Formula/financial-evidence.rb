@@ -25,7 +25,8 @@ class FinancialEvidence < Formula
       export PYTHONPATH="#{libexec/site_packages}${PYTHONPATH:+:$PYTHONPATH}"
       exec "#{python}" -m financial_evidence.mcp "$@"
     SH
-    chmod 0755, bin/"financial-evidence", bin/"financial-evidence-mcp"
+    chmod 0755, bin/"financial-evidence"
+    chmod 0755, bin/"financial-evidence-mcp"
 
     generate_completions_from_executable(bin/"financial-evidence", "completion")
   end
