@@ -17,6 +17,6 @@ Homebrew installs Bash, Zsh, and Fish completions automatically. The companion
 `financial-evidence-mcp` executable runs the same fixed-route evidence layer as
 a local stdio MCP server.
 
-The formula is built from the immutable `v0.1.0` source release and verifies
+The formula is built from the immutable `v0.1.2` source release and verifies
 its SHA-256 before installation. It has no runtime Python package dependencies
 and makes read-only requests only to fixed public HTTPS routes.
