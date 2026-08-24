@@ -3,8 +3,8 @@ class LiquilensEvidence < Formula
 
   desc "Issue, verify, and project portable financial evidence carriers"
   homepage "https://liquilens.in/protocol/"
-  url "https://github.com/beepboop2025/liquilens-evidence-carrier/releases/download/v0.13.6/liquilens_evidence-0.13.6.tar.gz"
-  sha256 "63ccb12e6d82c34e546ba4fe11058d5aee216a70bd8f9fa96335a4cc9d5bfd6c"
+  url "https://github.com/beepboop2025/liquilens-evidence-carrier/releases/download/v0.14.0/liquilens_evidence-0.14.0.tar.gz"
+  sha256 "bd7a0a61bdb99784071021f95c160b9baeb22e00054f80abc03445a6cf576567"
   license "Apache-2.0"
 
   depends_on "python@3.14"
@@ -72,6 +72,7 @@ class LiquilensEvidence < Formula
 
     verification = shell_output("#{bin}/liquilens-evidence verify carrier.json --as-of 2026-08-25T00:00:00Z")
     assert_match '"ok": true', verification
+    assert_match "--root ROOT", shell_output("#{bin}/liquilens-evidence-mcp --help")
 
     system libexec/"bin/python", "-c",
            "from liquilens_evidence.protocol_resources import protocol_path; " \
