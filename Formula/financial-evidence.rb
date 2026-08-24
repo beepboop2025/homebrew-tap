@@ -30,7 +30,7 @@ class FinancialEvidence < Formula
     routes = shell_output("#{bin}/financial-evidence route --topic money-market")
     assert_match "https://api.seiche.info/api/v2/money-markets", routes
 
-    request = '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}\n'
+    request = "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\",\"params\":{}}\n"
     response = pipe_output(bin/"financial-evidence-mcp", request)
     assert_match "financial_evidence_fetch", response
     assert_match "financial_evidence_route", response
