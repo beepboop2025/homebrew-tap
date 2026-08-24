@@ -1,0 +1,23 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  formula:
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Register checkout as the tap
+        run: brew tap beepboop2025/tap "$GITHUB_WORKSPACE"
+      - run: brew audit --strict --online beepboop2025/tap/financial-evidence
+      - run: brew install beepboop2025/tap/financial-evidence
+      - run: brew test beepboop2025/tap/financial-evidence
