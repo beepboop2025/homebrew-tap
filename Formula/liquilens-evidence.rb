@@ -3,8 +3,8 @@ class LiquilensEvidence < Formula
 
   desc "Issue, verify, and project portable financial evidence carriers"
   homepage "https://liquilens.in/protocol/"
-  url "https://github.com/beepboop2025/liquilens-evidence-carrier/releases/download/v0.14.0/liquilens_evidence-0.14.0.tar.gz"
-  sha256 "bd7a0a61bdb99784071021f95c160b9baeb22e00054f80abc03445a6cf576567"
+  url "https://github.com/beepboop2025/liquilens-evidence-carrier/releases/download/v0.15.0/liquilens_evidence-0.15.0.tar.gz"
+  sha256 "3c8976fff003e4671ebc3f5dab7d9e26562f2950d182460cf0ee2f57ebe72f75"
   license "Apache-2.0"
 
   depends_on "python@3.14"
