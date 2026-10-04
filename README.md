@@ -32,6 +32,10 @@ Homebrew installs Bash, Zsh, and Fish completions automatically. The companion
 `financial-evidence-mcp` executable runs the same fixed-route evidence layer as
 a local stdio MCP server.
 
-The formula is built from the immutable `v0.1.3` source release and verifies
+The formula is built from the immutable `v0.1.6` source release and verifies
 its SHA-256 before installation. It has no runtime Python package dependencies
 and makes read-only requests only to fixed public HTTPS routes.
+
+Eight topics are available: money markets, capital markets, China economy,
+bank risk, market liquidity, GIFT City, forex, and gold. The last three route to
+bounded Seiche public evidence; they do not provide executable FX or gold quotes.
