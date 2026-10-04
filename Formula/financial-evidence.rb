@@ -49,8 +49,13 @@ class FinancialEvidence < Formula
 
     requests = [
       {
-        id: 1, method: "initialize",
-        params: { protocolVersion: "2025-11-25", capabilities: {}, clientInfo: { name: "homebrew-test", version: "1" } },
+        id: 1,
+        method: "initialize",
+        params: {
+          protocolVersion: "2025-11-25",
+          capabilities: {},
+          clientInfo: { name: "homebrew-test", version: "1" },
+        },
       },
       { id: 2, method: "server/discover", params: {} },
       { id: 3, method: "tools/list", params: {} },
