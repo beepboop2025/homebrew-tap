@@ -1,8 +1,8 @@
 class FinancialEvidence < Formula
   desc "Read-only CLI and MCP router for public financial evidence"
   homepage "https://github.com/beepboop2025/financial-evidence-skills"
-  url "https://github.com/beepboop2025/financial-evidence-skills/releases/download/v0.1.6/financial_evidence-0.1.6.tar.gz"
-  sha256 "442620a9ce6dc98cb0d15a119a56ac15b399be4ccb4bf24e2b7a5bb23fdf98d0"
+  url "https://github.com/beepboop2025/financial-evidence-skills/releases/download/v0.1.7/financial_evidence-0.1.7.tar.gz"
+  sha256 "aa8af511284f463cd08c63b435ba073cc29de9dba3ff1378468aec18668e827d"
   license "MIT"
   head "https://github.com/beepboop2025/financial-evidence-skills.git", branch: "main"
 
@@ -13,6 +13,7 @@ class FinancialEvidence < Formula
     site_packages = Language::Python.site_packages("python3.14")
     package = libexec/site_packages/"financial_evidence"
     package.install Dir["src/financial_evidence/*.py"]
+    package.install "src/financial_evidence/runtime"
 
     (bin/"financial-evidence").write <<~SH
       #!/bin/bash
@@ -24,8 +25,14 @@ class FinancialEvidence < Formula
       export PYTHONPATH="#{libexec/site_packages}${PYTHONPATH:+:$PYTHONPATH}"
       exec "#{python}" -m financial_evidence.mcp "$@"
     SH
+    (bin/"financial-evidence-runtime").write <<~SH
+      #!/bin/bash
+      export PYTHONPATH="#{libexec/site_packages}${PYTHONPATH:+:$PYTHONPATH}"
+      exec "#{python}" -m financial_evidence.runtime.cli "$@"
+    SH
     chmod 0755, bin/"financial-evidence"
     chmod 0755, bin/"financial-evidence-mcp"
+    chmod 0755, bin/"financial-evidence-runtime"
 
     generate_completions_from_executable(bin/"financial-evidence", "completion")
   end
@@ -35,6 +42,15 @@ class FinancialEvidence < Formula
     assert_match version.to_s, shell_output("#{bin}/financial-evidence --version")
     listed = JSON.parse(shell_output("#{bin}/financial-evidence topics --format json"))
     assert_equal topics.sort, listed.fetch("topics").map { |topic| topic.fetch("topic") }.sort
+
+    runtime = JSON.parse(shell_output("#{bin}/financial-evidence-runtime catalog"))
+    assert_equal "financial-evidence.runtime-capabilities.v1", runtime.fetch("schema")
+    state = testpath/"research-state"
+    runtime_command = "#{bin}/financial-evidence-runtime --root #{state}"
+    report = JSON.parse(shell_output("#{runtime_command} init --traffic-class synthetic"))
+    assert_equal "synthetic", report.fetch("traffic_class")
+    assert_nil report.fetch("external_active_users")
+    assert_path_exists state/"runtime.sqlite"
 
     routes = JSON.parse(shell_output("#{bin}/financial-evidence route --topic #{topics.join(",")}"))
     assert_equal topics.sort, routes.fetch("topics").keys.sort
