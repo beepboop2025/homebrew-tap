@@ -11,7 +11,7 @@ permissions:
 jobs:
   formula:
     runs-on: macos-15
-    timeout-minutes: 15
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -25,5 +25,45 @@ jobs:
       - name: Register checkout as the tap
         run: brew tap beepboop2025/tap "$GITHUB_WORKSPACE"
       - run: brew audit --strict --online "beepboop2025/tap/${{ matrix.formula }}"
+      - run: brew style "beepboop2025/tap/${{ matrix.formula }}"
       - run: brew install "beepboop2025/tap/${{ matrix.formula }}"
       - run: brew test "beepboop2025/tap/${{ matrix.formula }}"
+      - name: Record the installed Financial Evidence identity
+        if: matrix.formula == 'financial-evidence'
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, re, subprocess
+          from datetime import datetime, timezone
+          formula = pathlib.Path("Formula/financial-evidence.rb").read_bytes()
+          source = formula.decode()
+          prefix = subprocess.check_output(
+              ["brew", "--prefix", "beepboop2025/tap/financial-evidence"], text=True).strip()
+          python = pathlib.Path(prefix) / "libexec/bin/python"
+          identity = json.loads(subprocess.check_output([str(python), "-c", '''
+          import hashlib, json
+          from importlib.metadata import distribution
+          from pathlib import Path
+          import financial_evidence.hosted
+          package = distribution("financial-evidence")
+          print(json.dumps({"version": package.version,
+              "entrypoints": sorted(entry.name for entry in package.entry_points if entry.group == "console_scripts"),
+              "platform_url": financial_evidence.hosted.PLATFORM_URL,
+              "hosted_module_sha256": hashlib.sha256(Path(financial_evidence.hosted.__file__).read_bytes()).hexdigest()}))
+          '''], text=True))
+          receipt = {"schema": "financial-evidence.homebrew-native-install.v1",
+              "observed_at": datetime.now(timezone.utc).isoformat(), "status": "PASS",
+              "source_commit": os.environ["GITHUB_SHA"],
+              "formula_sha256": hashlib.sha256(formula).hexdigest(),
+              "release_url": re.search(r'^  url "([^"]+)"', source, re.M).group(1),
+              "release_sha256": re.search(r'^  sha256 "([^"]+)"', source, re.M).group(1),
+              "installed": identity,
+              "checks": ["strict_online_audit", "style", "actual_homebrew_install", "formula_test"],
+              "scope": "Fresh CI consumer installation; publication and adoption are separate"}
+          pathlib.Path("homebrew-install-receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          PY
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        if: matrix.formula == 'financial-evidence'
+        with:
+          name: homebrew-financial-evidence-install
+          path: homebrew-install-receipt.json
+          if-no-files-found: error
