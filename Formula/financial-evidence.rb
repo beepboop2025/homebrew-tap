@@ -3,8 +3,8 @@ class FinancialEvidence < Formula
 
   desc "Read-only CLI and MCP router for public financial evidence"
   homepage "https://github.com/beepboop2025/financial-evidence-skills"
-  url "https://github.com/beepboop2025/financial-evidence-skills/releases/download/v0.1.8/financial_evidence-0.1.8.tar.gz"
-  sha256 "7165c192628555e9c76f832f2e87ad7d39d2a71530fac96b3d8dc0b7552baa91"
+  url "https://github.com/beepboop2025/financial-evidence-skills/releases/download/v0.1.9/financial_evidence-0.1.9.tar.gz"
+  sha256 "87bd5c9fa7de6198367af333ca26bb302533f93a12bbcf1ca7ffca753c1cc210"
   license "MIT"
   head "https://github.com/beepboop2025/financial-evidence-skills.git", branch: "main"
 
