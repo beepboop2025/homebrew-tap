@@ -43,9 +43,12 @@ a local stdio MCP server. Requests use the hosted central service at
 Hosted failures remain visible and do not trigger a direct-source fallback.
 
 Run `financial-evidence-trading mcp-config` for the hosted product connections.
-Version 0.1.9 includes persistent Python MCP sessions, source-status snapshots
-and SSE clients. Use `financial-evidence-trading doctor` to check the connection
-and `financial-evidence-trading context` to inspect source-status metadata.
+Version 0.1.10 includes persistent Python MCP sessions, source-status snapshots
+and SSE clients with complete-event deadlines. Partial bytes and comment frames
+cannot keep an incomplete source-status event open indefinitely, and a keepalive
+cannot substitute for the initial reset. Use `financial-evidence-trading doctor`
+to check the connection and `financial-evidence-trading context` to inspect
+source-status metadata.
 The package-name command `financial-evidence mcp` also starts the stdio router.
 The installation also includes the workspace REST/MCP commands, product and
 network MCP bridges, research runtime, and explicit learning administration.
