@@ -3,8 +3,8 @@ class FinancialEvidence < Formula
 
   desc "Read-only CLI and MCP router for public financial evidence"
   homepage "https://github.com/beepboop2025/financial-evidence-skills"
-  url "https://github.com/beepboop2025/financial-evidence-skills/releases/download/v0.1.11/financial_evidence-0.1.11.tar.gz"
-  sha256 "aa81710b2115fbcbffa1d6e23bccd1f533e95ee1642e33e21d584c903539cce2"
+  url "https://github.com/beepboop2025/financial-evidence-skills/releases/download/v0.1.12/financial_evidence-0.1.12.tar.gz"
+  sha256 "20cce4ba3d1c036c81a10f8f3b6a07d03626df2bd3999fe975aa73293d0fdba6"
   license "MIT"
   head "https://github.com/beepboop2025/financial-evidence-skills.git", branch: "main"
 
@@ -192,6 +192,13 @@ class FinancialEvidence < Formula
     assert_equal false, starter.fetch("network_access_performed")
     assert_equal %w[funding institutions exit], starter.fetch("tasks").map { |task| task.fetch("id") }
     assert_match "--previous", shell_output("#{bin}/financial-evidence review funding --help")
+    assert_match "--selection", shell_output("#{bin}/financial-evidence workflow run --help")
+    workflow_state = testpath/"workflow-state"
+    workflow = JSON.parse(shell_output("#{bin}/financial-evidence workflow report --state #{workflow_state}"))
+    assert_equal "financial-evidence.workflow-report.v1", workflow.fetch("schema")
+    assert_equal 0, workflow.fetch("runs")
+    assert_equal 0, workflow.fetch("operator_confirmed_useful_workflows")
+    assert_nil workflow.fetch("independently_verified_outcomes")
 
     runtime = JSON.parse(shell_output("#{bin}/financial-evidence-runtime catalog"))
     assert_equal "financial-evidence.runtime-capabilities.v1", runtime.fetch("schema")
