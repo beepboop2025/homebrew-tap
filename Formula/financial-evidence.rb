@@ -3,8 +3,8 @@ class FinancialEvidence < Formula
 
   desc "Read-only CLI and MCP router for public financial evidence"
   homepage "https://github.com/beepboop2025/financial-evidence-skills"
-  url "https://github.com/beepboop2025/financial-evidence-skills/releases/download/v0.1.10/financial_evidence-0.1.10.tar.gz"
-  sha256 "fc33e0f9bd667971da874d2c252b520ad7a618e68428c1fcb968e090a6e926fa"
+  url "https://github.com/beepboop2025/financial-evidence-skills/releases/download/v0.1.11/financial_evidence-0.1.11.tar.gz"
+  sha256 "aa81710b2115fbcbffa1d6e23bccd1f533e95ee1642e33e21d584c903539cce2"
   license "MIT"
   head "https://github.com/beepboop2025/financial-evidence-skills.git", branch: "main"
 
@@ -187,6 +187,11 @@ class FinancialEvidence < Formula
     assert_match version.to_s, shell_output("#{bin}/financial-evidence --version")
     listed = JSON.parse(shell_output("#{bin}/financial-evidence topics --format json"))
     assert_equal topics.sort, listed.fetch("topics").map { |topic| topic.fetch("topic") }.sort
+
+    starter = JSON.parse(shell_output("#{bin}/financial-evidence start --format json"))
+    assert_equal false, starter.fetch("network_access_performed")
+    assert_equal %w[funding institutions exit], starter.fetch("tasks").map { |task| task.fetch("id") }
+    assert_match "--previous", shell_output("#{bin}/financial-evidence review funding --help")
 
     runtime = JSON.parse(shell_output("#{bin}/financial-evidence-runtime catalog"))
     assert_equal "financial-evidence.runtime-capabilities.v1", runtime.fetch("schema")
