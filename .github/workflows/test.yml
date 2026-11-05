@@ -24,6 +24,8 @@ jobs:
           persist-credentials: false
       - name: Register checkout as the tap
         run: brew tap beepboop2025/tap "$GITHUB_WORKSPACE"
+      - name: Trust only the checked-out formula under test
+        run: brew trust --formula "beepboop2025/tap/${{ matrix.formula }}"
       - run: brew audit --strict --online "beepboop2025/tap/${{ matrix.formula }}"
       - run: brew style "beepboop2025/tap/${{ matrix.formula }}"
       - run: brew install "beepboop2025/tap/${{ matrix.formula }}"

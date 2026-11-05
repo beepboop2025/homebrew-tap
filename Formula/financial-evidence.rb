@@ -3,8 +3,8 @@ class FinancialEvidence < Formula
 
   desc "Read-only CLI and MCP router for public financial evidence"
   homepage "https://github.com/beepboop2025/financial-evidence-skills"
-  url "https://github.com/beepboop2025/financial-evidence-skills/releases/download/v0.1.13/financial_evidence-0.1.13.tar.gz"
-  sha256 "37e95fcf58458f284e69a1e8576c6c3100934bca120b1c9fc8096a3320d56257"
+  url "https://github.com/beepboop2025/financial-evidence-skills/releases/download/v0.1.17/financial_evidence-0.1.17.tar.gz"
+  sha256 "1ba59c858adbc39e1b49c5fb09b33eddea1dd7e97a3698e8db06bf77d886238e"
   license "MIT"
   head "https://github.com/beepboop2025/financial-evidence-skills.git", branch: "main"
 
@@ -230,9 +230,12 @@ class FinancialEvidence < Formula
     (testpath/"installed_workspace.py").write <<~PYTHON
       import asyncio
       import json
+      from copy import deepcopy
       from importlib.metadata import distribution
       from pathlib import Path
       import httpx
+      from financial_evidence.trading import ProductClient
+      from financial_evidence.trading.client import READ_TOOLS
       from financial_evidence.workspace import create_app
 
       expected = {
@@ -258,6 +261,43 @@ class FinancialEvidence < Formula
               catalog = response.json()
               assert "money_markets" in json.dumps(catalog)
       asyncio.run(check_workspace())
+
+      async def check_geography():
+          assert "lending_geography" in READ_TOOLS["liquilens"]
+          calls = []
+          evidence = {
+              "schema": "liquilens.lending-geography.v1", "scope": "research",
+              "as_of": "2026-11-05", "score_authority": False, "scoring_eligible": False,
+              "offset": 5, "next_offset": 10,
+              "sources": {"soil_moisture": {"as_of": "2024-10-15"}},
+              "districts": [{"recent_months": {"mm": [0, None, 10]}}],
+          }
+          result = {"content": [{"type": "text", "text": json.dumps(evidence)}]}
+
+          async def transport(url, tool, arguments, timeout):
+              calls.append((url, tool, deepcopy(arguments)))
+              return {"result": deepcopy(result)}
+
+          client = ProductClient(transport=transport, mode="test", platform_url="https://agents.seiche.info")
+          arguments = {"id": "in-state-rajasthan", "offset": 5}
+          receipt = await client.call("liquilens", "lending_geography", arguments)
+          assert receipt["payload"]["result"] == result
+          assert json.loads(receipt["payload"]["result"]["content"][0]["text"]) == evidence
+          assert calls == [("https://agents.seiche.info/products/liquilens/mcp", "lending_geography", arguments)]
+          invalid = [
+              {"id": "https://example.invalid"},
+              {"id": "in-state-rajasthan", "score_authority": True},
+              *({"id": "in-state-rajasthan", "offset": value} for value in (True, -1, 1001, 0.5)),
+          ]
+          for arguments in invalid:
+              try:
+                  await client.call("liquilens", "lending_geography", arguments)
+              except ValueError:
+                  pass
+              else:
+                  raise AssertionError("invalid geography arguments were accepted")
+          assert len(calls) == 1
+      asyncio.run(check_geography())
       print("INSTALLED_WORKSPACE_PASS")
     PYTHON
     assert_match "INSTALLED_WORKSPACE_PASS", shell_output("#{libexec}/bin/python #{testpath}/installed_workspace.py")
